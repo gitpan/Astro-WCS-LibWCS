@@ -1,0 +1,14 @@
+ChangeLog
+INSTALL
+MANIFEST
+Makefile.PL
+LibWCS.pm
+LibWCS.xs
+LICENSE
+README
+typemap
+util.c
+util.h
+t/AAA_load.t
+t/dateutil.t
+t/wcsinit.t

@@ -1,0 +1,36 @@
+TYPEMAP
+WCS *          T_PTROBJ
+StarCat  *     T_PTROBJ
+Star  *        T_PTROBJ
+TabTable  *    T_PTROBJ
+Range  *       T_PTROBJ
+Keyword *      T_PTROBJ
+byte *         T_BYTEP
+int *          T_INTP
+double *       T_DOUBLEP
+char  *        T_STRING
+char  **       T_STRINGP
+float          T_FLOAT
+
+INPUT
+T_STRINGP
+	$var = ($type)packND($arg,TSTRING)
+T_BYTEP
+	$var = ($type)packND($arg,TBYTE)
+T_INTP
+	$var = ($type)packND($arg,TINT)
+T_DOUBLEP
+	$var = ($type)packND($arg,TDOUBLE)
+T_STRING
+	{
+		if ($arg == &PL_sv_undef)
+			$var = ($type)NULL;
+		else
+			$var = ($type)SvPV($arg,PL_na);
+	}
+
+OUTPUT
+T_STRING
+	if ($var != NULL)
+		sv_setpv((SV *)$arg, $var);
+
