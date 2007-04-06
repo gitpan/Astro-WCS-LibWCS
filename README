@@ -2,7 +2,7 @@
 
 What is it?
 -----------
-   Astro::WCS::WCSTools is a Perl interface to the WCSTools libwcs
+   Astro::WCS::LibWCS is a Perl interface to the WCSTools libwcs
    library. For more information on WCSTools, see
    http://tdc-www.harvard.edu/software/wcstools/
 
@@ -12,7 +12,7 @@ Where can (did) I get it?
 
 What version of wcstools does this module require?
 ----------------------------------------------
-  Astro::WCS::LibWCS version 0.90 requires WCSTools version 3.4.0.
+  Astro::WCS::LibWCS version 0.91 requires WCSTools version 3.6.8.
 
 Installation
 ------------

@@ -1,8 +1,12 @@
 1. Set the WCSTOOLS environment variable pointing to the location of
    your WCSTools distribution:
 
-   $ export WCSTOOLS=/path/to/wcstools # Bourne shell and friends
-   % setenv WCSTOOLS /path/to/wcstools # C shell variants
+   Bourne shells
+   $ WCSTOOLS=/path/to/wcstools
+   $ export WCSTOOLS
+
+   C shells
+   % setenv WCSTOOLS /path/to/wcstools
 
 2. perl Makefile.PL
 

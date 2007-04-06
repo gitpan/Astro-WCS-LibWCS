@@ -49,7 +49,7 @@ int PerlyUnpacking( int value ) {
  * Packs a Perl array reference into the appropriate C datatype
  */
 void* pack1D ( SV* arg, int datatype ) {
-	int size;
+	unsigned long i, n, size;
 	char * stringscalar;
 	logical logscalar;
 	byte bscalar;
@@ -64,7 +64,6 @@ void* pack1D ( SV* arg, int datatype ) {
 	float cmpval[2];
 	double dblcmpval[2];
 	AV* array;
-	I32 i,n;
 	SV* work;
 	SV** work2;
 	double nval;
@@ -541,7 +540,7 @@ void unpackND ( SV * arg, void * var, int ndims, long *dims, int datatype ) {
  * Set argument's value to (copied) data.
  */
 void unpack2scalar ( SV * arg, void * var, long n, int datatype ) {
-	long data_length;
+	unsigned long data_length;
 
 	if (datatype == TSTRING)
 		croak("unpack2scalar() - how did you manage to call me with a TSTRING datatype?!");
@@ -764,7 +763,7 @@ AV* coerceND (SV *arg, int ndims, long *dims) {
  * by making a mortal Perl variable of the appropriate size.
  */
 void* get_mortalspace( long n, int datatype ) {
-	long datalen;
+	unsigned long datalen;
 	SV *work;
 
 	work = sv_2mortal(newSVpv("", 0));

@@ -1,3 +1,17 @@
+2007-04-06  Pete Ratzlaff  <pratzlaff@cfa.harvard.edu>
+
+	* LibWCS.pm: $VERSION = '0.91'
+
+	* LibWCS.xs: lots of changes to make everything compatible with
+	wcstools 3.6.8
+
+2003-09-18  Pete Ratzlaff  <pratzlaff@cfa.harvard.edu>
+
+	* LibWCS.xs: lots of bugs uncovered and hopefully fixed due to
+	prototype checking.
+
+	* wcsdecl.h: added to fill in lack of declaraction in libwcs headers
+
 2003-09-04  Pete Ratzlaff  <pratzlaff@cfa.harvard.edu>
 
 	* $VERSION = '0.90', uploaded to CPAN.

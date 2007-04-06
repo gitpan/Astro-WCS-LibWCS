@@ -1,6 +1,6 @@
 package Astro::WCS::LibWCS;
 
-$VERSION = '0.90';
+$VERSION = '0.91';
 
 use strict;
 use Carp;
@@ -186,7 +186,6 @@ my @_functions = qw(
 		    worldpos
 		    worldpix
 		    hputi4
-		    hputi2
 		    hputr4
 		    hputr8
 		    hputnr8
@@ -224,9 +223,7 @@ my @_functions = qw(
 		    tabcol
 		    istab
 		    uacread
-		    usaread
 		    uacrnum
-		    usarnum
 		    ujcread
 		    ujcrnum
 		    RefCat
@@ -389,10 +386,8 @@ my @_functions = qw(
 		    setmatch
 
 		    setreflim
-		    setclass
 		    setfitwcs
 		    setfitplate
-		    setplate
 		    setminstars
 		    setnofit
 		    setfrac
@@ -407,6 +402,7 @@ my @_functions = qw(
 		    StarMatch
 		    ParamFit
 		    NParamFit
+		    ReadMatch
 		    WCSMatch
 		    FitMatch
 		    setresid_refine
@@ -456,7 +452,7 @@ sub AUTOLOAD {
 	}
     }
     no strict 'refs';
-    *$AUTOLOAD = sub () { $val };
+    *$AUTOLOAD = sub { $val };
     goto &$AUTOLOAD;
 }
 
