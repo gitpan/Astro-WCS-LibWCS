@@ -1,3 +1,20 @@
+2010-11-30  Diab Jerius  <dj@macabre.cfa.harvard.edu>
+
+	* LibWCS.PM: $VERSION = '0.93'
+
+	* LibWCS.xs, LibWCS.pm: upgraded to libwcs v 3.8.1, added new
+	functions ang2hr, ang2deg, deg2ang, hr2ang, jd2mst2, mjd2mst
+
+2010-11-30  Diab Jerius  <dj@macabre.cfa.harvard.edu>
+
+	* LibWCS.PM: $VERSION = '0.92'
+
+	* typemap, util.c: modernize code to check for undefined values;
+	old code fails on newer perls in certain cases
+
+	* Makefile.PL: add new configure options to allow different roots
+	for libs and includes for libwcs
+
 2007-04-06  Pete Ratzlaff  <pratzlaff@cfa.harvard.edu>
 
 	* LibWCS.pm: $VERSION = '0.91'

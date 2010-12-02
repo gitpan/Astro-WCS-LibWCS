@@ -2,10 +2,10 @@
 #include "perl.h"
 #include "XSUB.h"
 
+#include "fitsfile.h"
 #include "wcs.h"
 #include "wcscat.h"
 #include "util.h"
-#include "fitsfile.h"
 
 typedef struct WorldCoor WCS;
 typedef struct StarCat   StarCat;
@@ -2598,6 +2598,42 @@ rgeti4(range)
 ##
 ##
 
+void
+ang2hr(angle,lstr,string)
+	double angle
+	int lstr
+	char * string = NO_INIT
+	CODE:
+		if (lstr <= 0)
+			lstr = 2880;
+		string = get_mortalspace(lstr,TBYTE);
+		ang2hr(angle, lstr, string );
+	OUTPUT:
+		string
+
+void
+ang2deg(angle,lstr,string)
+	double angle
+	int lstr
+	char * string = NO_INIT
+	CODE:
+		if (lstr <= 0)
+			lstr = 2880;
+		string = get_mortalspace(lstr,TBYTE);
+		ang2deg(angle, lstr, string );
+	OUTPUT:
+		string
+
+
+double
+deg2ang( angle )
+	 char * angle
+
+
+double
+hr2ang( angle )
+	char *angle
+
 char *
 dt2fd(date,time)
 	double date
@@ -3347,6 +3383,14 @@ dt2mst(date,time)
 double
 ts2mst(tsec)
 	double tsec
+
+double
+jd2mst2(dj)
+	double dj
+
+double
+mjd2mst(dj)
+	double dj
 
 void
 compnut(jd, dpsi, deps, eps0)

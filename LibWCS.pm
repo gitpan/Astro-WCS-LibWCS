@@ -1,6 +1,6 @@
 package Astro::WCS::LibWCS;
 
-$VERSION = '0.91';
+$VERSION = '0.93';
 
 use strict;
 use Carp;
@@ -245,6 +245,10 @@ my @_functions = qw(
 		    rgetr8
 		    rgeti4
 
+		    ang2hr
+		    ang2deg
+		    deg2ang
+		    hr2ang
 		    dt2fd
 		    dt2jd
 		    dt2mjd
@@ -375,6 +379,8 @@ my @_functions = qw(
 		    fd2mst
 		    dt2mst
 		    ts2mst
+		    jd2mst2
+		    mjd2mst
 		    compnut
 		    isdate
 

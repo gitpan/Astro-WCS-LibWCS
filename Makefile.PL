@@ -6,6 +6,10 @@ if (exists $ENV{WCSTOOLS}) {
   $inc = "-I$ENV{WCSTOOLS}/libwcs";
   $libs = "-L$ENV{WCSTOOLS}/libwcs -lwcs -lm";
 }
+elsif (exists $ENV{WCSTOOLS_INC} && exists $ENV{WCSTOOLS_LIB} ) {
+  $inc = $ENV{WCSTOOLS_INC};
+  $libs = $ENV{WCSTOOLS_LIB};
+}
 else {
   warn("WCSTOOLS environment variable not found, assuming /usr/local/wcstools\n");
   $inc = "-I/usr/local/wcstools/libwcs";

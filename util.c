@@ -69,7 +69,7 @@ void* pack1D ( SV* arg, int datatype ) {
 	double nval;
 	STRLEN len;
 
-	if (arg == &PL_sv_undef)
+	if ( !SvOK(arg) )
 		return (void *) NULL;
 
 	if (is_scalar_ref(arg))                 /* Scalar ref */
@@ -317,7 +317,7 @@ void* packND ( SV* arg, int datatype ) {
 
 	SV* work;
 
-	if (arg == &PL_sv_undef)
+	if ( !SvOK(arg) )
 		return (void *) NULL;
 
 	if (is_scalar_ref(arg))

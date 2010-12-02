@@ -24,7 +24,7 @@ T_DOUBLEP
 	$var = ($type)packND($arg,TDOUBLE)
 T_STRING
 	{
-		if ($arg == &PL_sv_undef)
+		if ( ! SvOK($arg) )
 			$var = ($type)NULL;
 		else
 			$var = ($type)SvPV($arg,PL_na);
