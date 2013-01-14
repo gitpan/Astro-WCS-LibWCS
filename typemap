@@ -9,6 +9,7 @@ Keyword *      T_PTROBJ
 byte *         T_BYTEP
 int *          T_INTP
 double *       T_DOUBLEP
+double **      T_DOUBLEPP
 char  *        T_STRING
 char  **       T_STRINGP
 float          T_FLOAT
@@ -22,6 +23,8 @@ T_INTP
 	$var = ($type)packND($arg,TINT)
 T_DOUBLEP
 	$var = ($type)packND($arg,TDOUBLE)
+T_DOUBLEPP
+	croak(\"typemap file problem: T_DOUBLEPP without NO_INIT is unsupported\");
 T_STRING
 	{
 		if ( ! SvOK($arg) )

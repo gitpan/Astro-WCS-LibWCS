@@ -1,3 +1,13 @@
+2013-01-14  Pete Ratzlaff  <rpete@legs.cfa.harvard.edu>
+
+	* LibWCS.PM: $VERSION = '0.94'
+	
+	* LibWCS.xs: removed actread, actrnum, uacread, uacrnum, ujcread,
+	ujcrnum, tabread is reworked but completely untested, tabrnum
+	needs to be redone as well
+
+	* Makefile.PL: pkgconfig detection from Diab Jerius
+
 2010-11-30  Diab Jerius  <dj@macabre.cfa.harvard.edu>
 
 	* LibWCS.PM: $VERSION = '0.93'

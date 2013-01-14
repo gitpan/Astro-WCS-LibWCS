@@ -12,7 +12,7 @@ Where can (did) I get it?
 
 What version of wcstools does this module require?
 ----------------------------------------------
-  Astro::WCS::LibWCS version 0.93 requires WCSTools version 3.8.1 or newer.
+  Astro::WCS::LibWCS version 0.94 requires WCSTools version 3.8.1 or newer.
 
 Installation
 ------------

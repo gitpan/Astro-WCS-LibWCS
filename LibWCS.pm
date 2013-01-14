@@ -1,6 +1,6 @@
 package Astro::WCS::LibWCS;
 
-$VERSION = '0.93';
+$VERSION = '0.94';
 
 use strict;
 use Carp;
@@ -203,8 +203,6 @@ my @_functions = qw(
 		    dec2str
 		    deg2str
 		    num2str
-		    actread
-		    actrnum
 		    actopen
 		    actclose
 		    tabread
@@ -222,10 +220,6 @@ my @_functions = qw(
 		    tabparse
 		    tabcol
 		    istab
-		    uacread
-		    uacrnum
-		    ujcread
-		    ujcrnum
 		    RefCat
 		    CatCode
 		    CatID

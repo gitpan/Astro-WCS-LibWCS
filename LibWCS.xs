@@ -1766,98 +1766,6 @@ num2str(string,num,field,ndec)
 ##
 ##
 
-int
-actread(cra,cdec,dra,ddec,drad,dradi,distsort,sysout,eqout,epout,mag1,mag2,sortmag,nstarmax,gnum,gra,gdec,gpra,gpdec,gmag,gtype,nlog)
-	double cra
-	double cdec
-	double dra
-	double ddec
-	double drad
-	double dradi
-	int distsort
-	int sysout
-	double eqout
-	double epout
-	double mag1
-	double mag2
-	int sortmag
-	int nstarmax
-	double * gnum = NO_INIT
-	double * gra = NO_INIT
-	double * gdec = NO_INIT
-	double * gpra = NO_INIT
-	double * gpdec = NO_INIT
-	double ** gmag = NO_INIT
-	int * gtype = NO_INIT
-	int nlog
-	PREINIT:
-		long gmagdims[2];
-	CODE:
-		if (nstarmax < 0)
-			nstarmax = 0;
-
-		gnum = (double *) get_mortalspace(nstarmax, TDOUBLE);
-		gra = (double *) get_mortalspace(nstarmax, TDOUBLE);
-		gdec = (double *) get_mortalspace(nstarmax, TDOUBLE);
-		gpra = (double *) get_mortalspace(nstarmax, TDOUBLE);
-		gpdec = (double *) get_mortalspace(nstarmax, TDOUBLE);
-		gmag = (double **) get_mortalspace(2*nstarmax, TDOUBLE);
-		gtype = (int *) get_mortalspace(nstarmax, TINT);
-		RETVAL = actread(cra,cdec,dra,ddec,drad,dradi,distsort,sysout,eqout,epout,mag1,mag2,sortmag,nstarmax,gnum,gra,gdec,gpra,gpdec,gmag,gtype,nlog);
-
-		gmagdims[0]=2;
-		gmagdims[1]=RETVAL;
-
-		unpack1D(ST(14),gnum,RETVAL,TDOUBLE);
-		unpack1D(ST(15),gra,RETVAL,TDOUBLE);
-		unpack1D(ST(16),gdec,RETVAL,TDOUBLE);
-		unpack1D(ST(17),gpra,RETVAL,TDOUBLE);
-		unpack1D(ST(18),gpdec,RETVAL,TDOUBLE);
-		unpack2D(ST(19),gmag,gmagdims,TDOUBLE);
-		unpack1D(ST(20),gtype,RETVAL,TINT);
-	OUTPUT:
-		RETVAL
-
-int
-actrnum(nstars,sysout,eqout,epout,gnum,gra,gdec,gpra,gpdec,gmag,gtype,nlog)
-	int nstars
-	int sysout
-	double eqout
-	double epout
-	double * gnum
-	double * gra = NO_INIT
-	double * gdec = NO_INIT
-	double * gpra = NO_INIT
-	double * gpdec = NO_INIT
-	double ** gmag = NO_INIT
-	int * gtype = NO_INIT
-	int nlog
-	PREINIT:
-		long gmagdims[2];
-	CODE:
-		if (nstars < 0)
-			nstars = 0;
-
-		gra = (double *) get_mortalspace(nstars, TDOUBLE);
-		gdec = (double *) get_mortalspace(nstars, TDOUBLE);
-		gpra = (double *) get_mortalspace(nstars, TDOUBLE);
-		gpdec = (double *) get_mortalspace(nstars, TDOUBLE);
-		gmag = (double **) get_mortalspace(2*nstars, TDOUBLE);
-		gtype = (int *) get_mortalspace(nstars, TINT);
-		RETVAL = actrnum(nstars,sysout,eqout,epout,gnum,gra,gdec,gpra,gpdec,gmag,gtype,nlog);
-
-		gmagdims[0]=2;
-		gmagdims[1]=RETVAL;
-
-		unpack1D(ST(5),gra,RETVAL,TDOUBLE);
-		unpack1D(ST(6),gdec,RETVAL,TDOUBLE);
-		unpack1D(ST(7),gpra,RETVAL,TDOUBLE);
-		unpack1D(ST(8),gpdec,RETVAL,TDOUBLE);
-		unpack2D(ST(9),gmag,gmagdims,TDOUBLE);
-		unpack1D(ST(10),gtype,RETVAL,TINT);
-	OUTPUT:
-		RETVAL
-
 StarCat *
 actopen(regnum)
 	int regnum
@@ -1903,7 +1811,8 @@ tabread(tabcatname,distsort,cra,cdec,dra,ddec,drad,dradi,sysout,eqout,epout,mag1
 	char ** tkey = NO_INIT
 	int nlog
 	PREINIT:
-		long tmagdims[2];
+		long nmag, nstar, i, j, *tmagdims;
+		double *mag, *mag_, **tmag_;
 	CODE:
 		if (nstarmax < 0)
 			nstarmax = 0;
@@ -1912,16 +1821,15 @@ tabread(tabcatname,distsort,cra,cdec,dra,ddec,drad,dradi,sysout,eqout,epout,mag1
 		   which it then gets the number of magnitudes. We'll
 		   do the same here.
 		*/
-		tmagdims[0] = 0;
 		if (sv_derived_from(ST(15), "StarCatPtr")) {
 		   starcat = (StarCat*)SvIV((SV*)SvRV(ST(15)));
-		   tmagdims[0] = starcat->nmag;
+		   nmag = starcat->nmag;
 		}
 		else {
 		     ST(15) = sv_newmortal();
 		     starcat = tabcatopen (tabcatname, NULL, 0);
 		     if (starcat) {
-			tmagdims[0] = starcat->nmag;
+			nmag = starcat->nmag;
 			sv_setref_pv(ST(15),"StarCatPtr",starcat);
 		     }
 		}
@@ -1931,27 +1839,45 @@ tabread(tabcatname,distsort,cra,cdec,dra,ddec,drad,dradi,sysout,eqout,epout,mag1
 		tdec = (double *) get_mortalspace(nstarmax, TDOUBLE);
 		tpra = (double *) get_mortalspace(nstarmax, TDOUBLE);
 		tpdec = (double *) get_mortalspace(nstarmax, TDOUBLE);
-		tmag = (double **) get_mortalspace(tmagdims[0]*nstarmax, TDOUBLE);
 		tpeak = (int *) get_mortalspace(nstarmax, TINT);
 		tkey = (char **) get_mortalspace(nstarmax, TSTRING);
 
+		mag = (double *) get_mortalspace(nmag * nstarmax, TDOUBLE);
+		tmag = malloc(nmag * sizeof(double*));
+
+		for (i=0; i<nmag; ++i)
+			tmag[i] = mag + i * nstarmax;
+
 		RETVAL = tabread(tabcatname,distsort,cra,cdec,dra,ddec,drad,dradi,sysout,eqout,epout,mag1,mag2,nstarmax,sortmag,&starcat,tnum,tra,tdec,tpra,tpdec,tmag,tpeak,tkey,nlog);
 
-		tmagdims[1] = RETVAL;
+		nstar = RETVAL;
 
-		unpack1D(ST(16),tnum,RETVAL,TDOUBLE);
-		unpack1D(ST(17),tra,RETVAL,TDOUBLE);
-		unpack1D(ST(18),tdec,RETVAL,TDOUBLE);
-		unpack1D(ST(19),tpra,RETVAL,TDOUBLE);
-		unpack1D(ST(20),tpdec,RETVAL,TDOUBLE);
-		unpack2D(ST(21),tmag,tmagdims,TDOUBLE);
-		unpack1D(ST(22),tpeak,RETVAL,TINT);
-		unpack1D(ST(23),tkey,RETVAL,TSTRING);
-		{
-			int i;
-			for (i=0; i<RETVAL; i++)
-				free(tkey[i]);
-		}
+		tmagdims[0] = nmag;
+		tmagdims[1] = nstar;
+
+		mag_ = (double *) get_mortalspace(nmag * nstar, TDOUBLE);
+		tmag_ = malloc(nmag * sizeof(double*));
+
+		for (i=0; i<nmag; ++i)
+			tmag_[i] = mag_ + i * nstar;
+			for (j=0; j<nstar; ++j)
+				tmag_[i][j] = tmag[i][j];
+
+		free(tmag);
+		free(tmag_);
+
+		unpack1D(ST(16), tnum, nstar, TDOUBLE);
+		unpack1D(ST(17), tra, nstar, TDOUBLE);
+		unpack1D(ST(18), tdec, nstar, TDOUBLE);
+		unpack1D(ST(19), tpra, nstar, TDOUBLE);
+		unpack1D(ST(20), tpdec, nstar, TDOUBLE);
+		unpack2D(ST(21), mag_, tmagdims, TDOUBLE);
+		unpack1D(ST(22), tpeak, nstar, TINT);
+		unpack1D(ST(23), tkey, nstar, TSTRING);
+
+		for (i=0; i<nstar; i++)
+			free(tkey[i]);
+
 	OUTPUT:
 		RETVAL
 
@@ -2181,245 +2107,6 @@ tabcol(tabtable,keyword)
 int
 istab(filename)
 	char * filename
-
-##
-##
-## uacread.c
-##
-##
-
-##int
-##usaread(cra,cdec,dra,ddec,drad,distsort,sysout,eqout,epout,mag1,mag2,nstarmax, unum,ura,udec,umag,umagb,uplate,nlog)
-##	double cra
-##	double cdec
-##	double dra
-##	double ddec
-##	double drad
-##	int distsort
-##	int sysout
-##	double eqout
-##	double epout
-##	double mag1
-##	double mag2
-##	int nstarmax
-##	double * unum = NO_INIT
-##	double * ura = NO_INIT
-##	double * udec = NO_INIT
-##	double * umag = NO_INIT
-##	double * umagb = NO_INIT
-##	int * uplate = NO_INIT
-##	int nlog
-##	CODE:
-##		if (nstarmax < 0)
-##			nstarmax = 0;
-##		unum = (double *)get_mortalspace(nstarmax,TDOUBLE);
-##		ura = (double *)get_mortalspace(nstarmax,TDOUBLE);
-##		udec = (double *)get_mortalspace(nstarmax,TDOUBLE);
-##		umag = (double *)get_mortalspace(nstarmax,TDOUBLE);
-##		umagb = (double *)get_mortalspace(nstarmax,TDOUBLE);
-##		uplate = (int *)get_mortalspace(nstarmax,TINT);
-##		RETVAL = usaread(cra,cdec,dra,ddec,drad,distsort,sysout,eqout,epout,mag1,mag2,nstarmax,unum,ura,udec,umag,umagb,uplate,nlog);
-##		unpack1D(ST(12),unum,RETVAL,TDOUBLE);
-##		unpack1D(ST(13),ura,RETVAL,TDOUBLE);
-##		unpack1D(ST(14),udec,RETVAL,TDOUBLE);
-##		unpack1D(ST(15),umag,RETVAL,TDOUBLE);
-##		unpack1D(ST(16),umagb,RETVAL,TDOUBLE);
-##		unpack1D(ST(17),uplate,RETVAL,TINT);
-##	OUTPUT:
-##		RETVAL
-
-int
-uacread(refcatname,distsort,cra,cdec,dra,ddec,drad,dradi,sysout,eqout,epout,mag1,mag2,sortmag,nstarmax,unum,ura,udec,umaguplate,nlog)
-	char * refcatname
-	int distsort
-	double cra
-	double cdec
-	double dra
-	double ddec
-	double drad
-	double dradi
-	int sysout
-	double eqout
-	double epout
-	double mag1
-	double mag2
-	int sortmag
-	int nstarmax
-	double * unum = NO_INIT
-	double * ura = NO_INIT
-	double * udec = NO_INIT
-	double ** umag = NO_INIT
-	int * uplate = NO_INIT
-	int nlog
-	PREINIT:
-		long umagdims[2];
-	CODE:
-		if (nstarmax < 0)
-			nstarmax = 0;
-
-		unum = (double *)get_mortalspace(nstarmax,TDOUBLE);
-		ura = (double *)get_mortalspace(nstarmax,TDOUBLE);
-		udec = (double *)get_mortalspace(nstarmax,TDOUBLE);
-		umag = (double **)get_mortalspace(2*nstarmax,TDOUBLE);
-		uplate = (int *)get_mortalspace(nstarmax,TINT);
-
-		RETVAL = uacread(refcatname,distsort,cra,cdec,dra,ddec,drad,dradi,sysout,eqout,epout,mag1,mag2,sortmag,nstarmax,unum,ura,udec,umag,uplate,nlog);
-
-		umagdims[0] = 2;
-		umagdims[1] = RETVAL;
-
-		unpack1D(ST(15),unum,RETVAL,TDOUBLE);
-		unpack1D(ST(16),ura,RETVAL,TDOUBLE);
-		unpack1D(ST(17),udec,RETVAL,TDOUBLE);
-		unpack2D(ST(18),umag,umagdims,TDOUBLE);
-		unpack1D(ST(19),uplate,RETVAL,TINT);
-	OUTPUT:
-		RETVAL
-
-##int
-##usarnum(nnum,sysout,eqout,epout,unum,ura,udec,umag,umagb,uplate,nlog)
-##	int nnum
-##	int sysout
-##	double eqout
-##	double epout
-##	double *unum = NO_INIT
-##	double *ura = NO_INIT
-##	double *udec = NO_INIT
-####	double *umag = NO_INIT
-##	double *umagb = NO_INIT
-##	int *uplate = NO_INIT
-##	int nlog
-##	CODE:
-##		if (nnum < 0)
-##			nnum = 0;
-##		ura = (double *)get_mortalspace(nnum,TDOUBLE);
-##		udec = (double *)get_mortalspace(nnum,TDOUBLE);
-##		umag = (double *)get_mortalspace(nnum,TDOUBLE);
-##		umagb = (double *)get_mortalspace(nnum,TDOUBLE);
-##		uplate = (int *)get_mortalspace(nnum,TINT);
-##		RETVAL = usarnum(nnum,sysout,eqout,epout,unum,ura,udec,umag,umagb,uplate,nlog);
-##		unpack1D(ST(5),ura,RETVAL,TDOUBLE);
-##		unpack1D(ST(6),udec,RETVAL,TDOUBLE);
-##		unpack1D(ST(7),umag,RETVAL,TDOUBLE);
-##		unpack1D(ST(8),umagb,RETVAL,TDOUBLE);
-##		unpack1D(ST(9),uplate,RETVAL,TINT);
-##	OUTPUT:
-##		RETVAL
-
-int
-uacrnum(refcatname,nnum,sysout,eqout,epout,unum,ura,udec,umag,uplate,nlog)
-	char * refcatname
-	int nnum
-	int sysout
-	double eqout
-	double epout
-	double *unum
-	double *ura = NO_INIT
-	double *udec = NO_INIT
-	double **umag = NO_INIT
-	int *uplate = NO_INIT
-	int nlog
-	PREINIT:
-		long umagdims[2];
-	CODE:
-		if (nnum < 0)
-			nnum = 0;
-
-		ura = (double *)get_mortalspace(nnum,TDOUBLE);
-		udec = (double *)get_mortalspace(nnum,TDOUBLE);
-		umag = (double **)get_mortalspace(2*nnum,TDOUBLE);
-		uplate = (int *)get_mortalspace(nnum,TINT);
-
-		RETVAL = uacrnum(refcatname,nnum,sysout,eqout,epout,unum,ura,udec,umag,uplate,nlog);
-
-		umagdims[0] = 2;
-		umagdims[1] = RETVAL;
-
-		unpack1D(ST(6),ura,RETVAL,TDOUBLE);
-		unpack1D(ST(7),udec,RETVAL,TDOUBLE);
-		unpack2D(ST(8),umag,umagdims,TDOUBLE);
-		unpack1D(ST(9),uplate,RETVAL,TINT);
-	OUTPUT:
-		RETVAL
-
-##
-##
-## ujcread.c
-##
-##
-
-int
-ujcread (refcatname,cra,cdec,dra,ddec,drad,dradi,distsort,sysout,eqout,epout,mag1,mag2,nstarmax,unum,ura,udec,umag,uplate,verbose)
-	char * refcatname
-	double cra
-	double cdec
-	double dra
-	double ddec
-	double drad
-	double dradi
-	int distsort
-	int sysout
-	double eqout
-	double epout
-	double mag1
-	double mag2
-	int nstarmax
-	double * unum = NO_INIT
-	double * ura = NO_INIT
-	double * udec = NO_INIT
-	double * umag = NO_INIT
-	int * uplate = NO_INIT
-	int verbose
-	CODE:
-		if (nstarmax < 0)
-			nstarmax = 0;
-
-		unum = (double *)get_mortalspace(nstarmax,TDOUBLE);
-		ura = (double *)get_mortalspace(nstarmax,TDOUBLE);
-		udec = (double *)get_mortalspace(nstarmax,TDOUBLE);
-		umag = (double *)get_mortalspace(nstarmax,TDOUBLE);
-		uplate = (int *)get_mortalspace(nstarmax,TINT);
-
-		RETVAL = ujcread(refcatname,cra,cdec,dra,ddec,drad,dradi,distsort,sysout,eqout,epout,mag1,mag2,nstarmax,unum,ura,udec,&umag,uplate,verbose);
-
-		unpack1D(ST(14),unum,RETVAL,TDOUBLE);
-		unpack1D(ST(15),ura,RETVAL,TDOUBLE);
-		unpack1D(ST(16),udec,RETVAL,TDOUBLE);
-		unpack1D(ST(17),umag,RETVAL,TDOUBLE);
-		unpack1D(ST(18),uplate,RETVAL,TINT);
-	OUTPUT:
-		RETVAL
-		
-int
-ujcrnum(refcatname,nnum,sysout,eqout,epout,unum,ura,udec,umag,uplate,nlog)
-	char * refcatname
-	int nnum
-	int sysout
-	double eqout
-	double epout
-	double *unum
-	double *ura = NO_INIT
-	double *udec = NO_INIT
-	double *umag = NO_INIT
-	int *uplate = NO_INIT
-	int nlog
-	CODE:
-		if (nnum < 0)
-			nnum = 0;
-
-		ura = (double *)get_mortalspace(nnum,TDOUBLE);
-		udec = (double *)get_mortalspace(nnum,TDOUBLE);
-		umag = (double *)get_mortalspace(nnum,TDOUBLE);
-		uplate = (int *)get_mortalspace(nnum,TINT);
-
-		RETVAL = ujcrnum(refcatname,nnum,sysout,eqout,epout,unum,ura,udec,&umag,uplate,nlog);
-
-		unpack1D(ST(5),ura,RETVAL,TDOUBLE);
-		unpack1D(ST(6),udec,RETVAL,TDOUBLE);
-		unpack1D(ST(7),umag,RETVAL,TDOUBLE);
-		unpack1D(ST(8),uplate,RETVAL,TINT);
-	OUTPUT:
-		RETVAL
 
 ##
 ##
